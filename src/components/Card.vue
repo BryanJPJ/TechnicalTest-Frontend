@@ -1,5 +1,4 @@
 <script setup>
-import { defineProps } from 'vue';
 defineProps({
   id: {
     type: Number,
@@ -21,7 +20,7 @@ defineProps({
 </script>
 <template>
 
-<div class="container">
+<div id="cardCont" >
   <section class="mx-auto my-5" style="max-width: 23rem;">
       
     <div class="card testimonial-card mt-2 mb-3">
@@ -33,7 +32,7 @@ defineProps({
       <div class="card-body text-center">
         <h4 class="card-title font-weight-bold">{{title }}</h4>
         <hr>
-        <p><i class="fas fa-quote-left"></i>{{name}}</p>
+        <p><i class="fas fa-quote-left"></i>Author: {{name}}</p>
       </div>
     </div>
     
@@ -42,6 +41,12 @@ defineProps({
 
 </template>
 <style scoped>
+#cardCont{
+  width: 20em;
+  height: 25em;
+  margin-left: 10px;
+  margin-bottom: 10px;
+}
 body {
 	background-color: #f5f7fa;
 }
