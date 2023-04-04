@@ -1,17 +1,25 @@
-import { defineStore } from "pinia";
+import { ref } from "vue";
+import axios from "axios";
 
-export const useEventsStore = defineStore({
-  id: "Events", 
-  state: () => ({
-    Events: [],
-  }),
-  actions: {
-    async fetchEvents() {
-      const response = await fetch("https://itunes.apple.com/us/rss/toppodcasts/limit=100/genre=1310/json");
-      const responseJson = await response.json();
-      let allPodcasts = responseJson.feed.entry;
-      this.Events.push(allPodcasts)
-      // console.log('podcast array', this.Events);
-    },
-  },
-});
+class EventsStore {
+  events;
+  url="https://itunes.apple.com/us/rss/toppodcasts/limit=100/genre=1310/json";
+
+  constructor() {
+    this.events = ref([]);
+  }
+
+  getEvents() {
+    return this.events.value;
+  }
+
+  async fetchAllEvents() {
+    try {
+      await axios.get(this.url).then((response) => {
+        this.events.value = response.data.feed.entry;
+      });
+    } catch (err) {}
+  }
+}
+
+export default EventsStore;

@@ -1,42 +1,63 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router';
-import {useEventsStore} from './stores/iTunesStore';
-import { onBeforeMount } from 'vue';
+import { onBeforeMount, ref, computed } from 'vue';
+import EventsStore from "./stores/iTunesStore"
 import Card from "./components/Card.vue";
+import Filter from './components/Filter.vue';
 
-const store = useEventsStore();
+const store = new EventsStore();
+const stores = ref([]);
+const searchPodcast = ref("");
 
 onBeforeMount(async () => {
-  await store.fetchEvents();
-  console.log(store.Events[0]);
+  await store.fetchAllEvents();
+  stores.value = store.getEvents() ;
+  // const arrayPodcasts = store.Events[0];
+  
 });
+
+const filteredPodcasts = computed(() => {
+  if(!searchPodcast.value) return stores.value
+  return stores.value.filter(event =>
+  event['im:name'].label.toLowerCase().includes(searchPodcast.value.toLowerCase()) ||
+  event['im:artist'].label.toLowerCase().includes(searchPodcast.value.toLowerCase())
+  )
+})
+
 </script>
 
 <template>
   <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
-    </div>
-  </header>
-  <div  id="cardContainer" >
-  <div v-for="event in store.Events[0]" :key="event" id="cardFor">
-    <Card
-    :title="event.title.label" 
-    :name="event['im:name'].label"
-    :image="event['im:image'][2].label"
-    />
+    <div class="container">
+    <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
+      <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
+        <svg class="bi me-2" width="40" height="32"><use xlink:href="#bootstrap"></use></svg>
+        <span class="fs-4 fw-bold" id="titleMain">Podcaster</span>
+      </a>
+      
+    </header>
   </div>
-</div>
+  </header>
+  <main>
+    
+  <Filter v-model="searchPodcast"/>
+ 
+  <div  id="cardContainer" >
+    <Card v-for="event in filteredPodcasts" :event="event"/>
+ 
+  </div>
+
+</main>
   <RouterView />
 </template>
 
 <style scoped>
+a:link, a:visited, a:active {
+    text-decoration:none;
+}
+#titleMain{
+  color: blue;
+}
 #cardContainer{
   /* width: 10em; */
   height: 10em;
@@ -47,5 +68,9 @@ onBeforeMount(async () => {
 #cardFor{
   display: flex;
   flex-wrap: wrap;
+}
+#numberPodcasts{
+  font-size: large;
+  margin-right: 1em;
 }
 </style>
